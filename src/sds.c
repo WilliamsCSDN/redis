@@ -252,12 +252,14 @@ sds _sdsMakeRoomFor(sds s, size_t addlen, int greedy) {
     reqlen = newlen = (len+addlen);
     assert(newlen > len);   /* Catch size_t overflow */
     if (greedy == 1) {
+    // 如果小于1MB就会扩容为 修改后长度的两倍(实际会加1保存空字符)
         if (newlen < SDS_MAX_PREALLOC)
             newlen *= 2;
+    // 如果大于1MB就会扩容为 修改后长度 + 1MB(实际会加1保存空字符)
         else
             newlen += SDS_MAX_PREALLOC;
     }
-
+    // 判断长度对应的类型
     type = sdsReqType(newlen);
 
     /* Don't use type 5: the user is appending to the string and type 5 is
